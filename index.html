@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WGMS 氣象地動監測平台</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden; 
+            background-color: #000; /* 防止載入時閃爍白光 */
+        }
+        /* 核心技術：使用 iframe 嵌入並透過邊距隱藏平台標籤 */
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        iframe {
+            position: absolute;
+            top: -55px;   /* 往上擠掉 Hugging Face 頂部導航欄 */
+            left: 0;
+            width: 100%;
+            height: calc(100% + 110px); /* 補償上下被擠掉的空間，隱藏底部 Footer */
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <iframe src="https://huggingface.co/spaces/您的帳號/您的項目?embed=true"></iframe>
+    </div>
+</body>
+</html>
