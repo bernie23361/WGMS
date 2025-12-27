@@ -1,65 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WGMS 氣象地動監測平台</title>
     <style>
-        /* 蘇老闆的設計細節：背景與磨砂玻璃 */
+        /* 蘇老闆的設計風格：背景與 12 欄位對齊感 */
         body {
-            background: url('您的背景圖連結') no-repeat center center fixed;
+            margin: 0; padding: 0;
+            /* 請將下方的 URL 換成您在 GitHub 上的風景圖路徑 */
+            background: #2c3e50 url('https://raw.githubusercontent.com/bernie23361/WGMS/main/assets/background.jpg') no-repeat center center fixed;
             background-size: cover;
-            font-family: "PingFang TC", sans-serif;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
             display: flex; justify-content: center; align-items: center; height: 100vh;
+            overflow: hidden;
         }
+
+        /* 磨砂玻璃登錄框 */
         .login-card {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            padding: 40px; border-radius: 20px;
-            width: 400px; text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 380px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
         }
-        /* 蘇老闆要求的：紅框抖動動畫 */
+
+        /* 蘇老闆要求的：紅框抖動效果 */
         .error-shake {
-            animation: shake 0.5s;
-            border: 2px solid red !important;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            border: 2px solid #ff4d4f !important;
         }
+
         @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-        .login-btn { background: #2D9B91; color: white; border: none; padding: 10px 100px; border-radius: 5px; cursor: pointer; }
+
+        h2 { color: #ffffff; margin-bottom: 30px; font-weight: 500; letter-spacing: 2px; }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 14px; box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.9);
+            border: none; border-radius: 12px;
+            font-size: 16px; outline: none;
+        }
+
+        .options {
+            display: flex; align-items: center; justify-content: flex-start;
+            color: white; font-size: 14px; margin-bottom: 30px;
+        }
+
+        .login-btn {
+            width: 100%; padding: 15px;
+            background: #2D9B91; /* 蘇老闆選的配色 */
+            color: white; border: none; border-radius: 12px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover { background: #248277; }
+
+        #error-msg { color: #ff4d4f; font-size: 14px; margin-top: 20px; display: none; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; }
+
+        .copyright { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 40px; }
     </style>
 </head>
 <body>
-    <div class="login-card" id="card">
+
+    <div class="login-card" id="loginCard">
         <h2>歡迎回來！</h2>
-        <input type="text" id="acc" placeholder="用戶名"><br><br>
-        <input type="password" id="pw" placeholder="密碼"><br><br>
-        <label><input type="checkbox"> 記住密碼</label><br><br>
-        <button class="login-btn" onclick="tryLogin()">登錄</button>
-        <p id="error-msg" style="color: red; display: none;">⚠️ 登錄錯誤！請再重試一次...</p>
-        <p style="margin-top:20px; font-size: 12px;">天氣概況Weather工作室版權所有．</p>
+        <div class="input-group">
+            <input type="text" id="username" placeholder="用戶名">
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="密碼">
+        </div>
+        <div class="options">
+            <input type="checkbox" id="rememberMe" style="margin-right: 8px;"> 記住密碼
+        </div>
+        <button class="login-btn" onclick="handleLogin()">登錄</button>
+        <div id="error-msg">⚠️ 喔～登錄錯誤！請您再重試一次...</div>
+        <div class="copyright">天氣概況Weather工作室版權所有．</div>
     </div>
 
     <script>
-        async function tryLogin() {
-            const acc = document.getElementById('acc').value;
-            const pw = document.getElementById('pw').value;
-            const card = document.getElementById('card');
-            
-            // 這裡呼叫您的 Hugging Face 後端 API
-            const response = await fetch("您的HuggingFace網址/api/check_login", {
-                method: "POST",
-                body: JSON.stringify({data: [acc, pw]})
-            });
-            const result = await response.json();
+        async function handleLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const card = document.getElementById('loginCard');
+            const error = document.getElementById('error-msg');
 
-            if(result.data.status === "success") {
-                window.location.href = "dashboard.html"; // 登錄成功跳轉
-            } else {
-                card.classList.add('error-shake'); // 失敗則抖動
-                document.getElementById('error-msg').style.display = 'block';
+            // 這裡連接到您的 Hugging Face 後端 API
+            const HF_URL = "https://gmail23361-wo-eews-dashboard.hf.space";
+
+            try {
+                // 第一步：發送驗證請求
+                const response = await fetch(`${HF_URL}/call/check_login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ data: [user, pass] })
+                });
+                
+                const resultJson = await response.json();
+                const eventId = resultJson.event_id;
+
+                // 第二步：獲取驗證結果
+                const finalResponse = await fetch(`${HF_URL}/call/check_login/${eventId}`);
+                const finalResult = await finalResponse.text();
+
+                // 判斷後端回傳是否包含成功字眼
+                if (finalResult.includes("准許進入")) {
+                    window.location.href = "dashboard.html"; 
+                } else {
+                    triggerError();
+                }
+            } catch (e) {
+                console.error("連線失敗:", e);
+                triggerError();
+            }
+
+            function triggerError() {
+                card.classList.add('error-shake');
+                error.style.display = 'block';
                 setTimeout(() => card.classList.remove('error-shake'), 500);
             }
         }
