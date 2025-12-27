@@ -2,86 +2,100 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WGMS 氣象地動監測平台</title>
+    <title>WGMS | 登錄</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* 蘇老闆的設計風格：強制修正背景呈現 */
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            /* 暫時先用深藍色底，確保圖片沒出來前字是清楚的 */
-            background: #1a2a3a; 
-            /* 請確保此處網址正確，或改用您在 GitHub 上的 assets 路徑 */
-            background-image: url('https://raw.githubusercontent.com/bernie23361/WGMS/refs/heads/main/bg.jpg.jpg');
-            background-size: cover;
-            background-position: center;
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        
+        /* 蘇老闆的背景：加入深色遮罩提升質感 */
+        .bg-overlay {
+            position: fixed; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), 
+                        url('https://raw.githubusercontent.com/bernie23361/WGMS/main/assets/background.jpg');
+            background-size: cover; background-position: center;
+            z-index: -1;
         }
 
-        /* 磨砂玻璃卡片：修正邊框與透明度 */
+        .container {
+            display: flex; align-items: center; justify-content: center;
+            height: 100%; padding: 0 10%; /* 12 欄位對齊感 */
+        }
+
+        /* 左側大標題 */
+        .title-section {
+            flex: 1; color: white; text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .title-section h1 { font-size: 64px; margin: 0; letter-spacing: 5px; }
+        .title-section p { font-size: 24px; opacity: 0.9; }
+
+        /* 右側登錄框：磨砂玻璃效果 */
         .login-card {
-            background: rgba(255, 255, 255, 0.15) !important;
-            backdrop-filter: blur(25px) !important;
-            -webkit-backdrop-filter: blur(25px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 20px;
-            padding: 50px 40px;
-            width: 360px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            color: white; /* 確保在深色背景下看得到字 */
+            width: 400px; padding: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            color: white; text-align: center;
         }
 
-        /* 登錄錯誤的抖動特效 */
-        .error-shake {
-            animation: shake 0.5s ease-in-out;
-            border: 2px solid #ff4d4f !important;
+        /* 帶圖示的輸入框 */
+        .input-group {
+            position: relative; margin-bottom: 25px;
         }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
+        .input-group i {
+            position: absolute; left: 15px; top: 15px; color: #666;
         }
-
-        h2 { margin-bottom: 30px; font-weight: 400; letter-spacing: 1px; }
-
-        input {
-            width: 100%; padding: 12px; margin-bottom: 15px;
-            border-radius: 8px; border: none;
-            background: rgba(255, 255, 255, 0.9);
-            box-sizing: border-box; font-size: 16px;
+        .input-group input {
+            width: 100%; padding: 15px 15px 15px 45px;
+            border-radius: 12px; border: none; outline: none;
+            background: rgba(255, 255, 255, 0.9); font-size: 16px;
+            box-sizing: border-box;
         }
 
         .login-btn {
-            width: 100%; padding: 14px; margin-top: 10px;
-            background: #2D9B91; color: white;
-            border: none; border-radius: 8px;
-            font-size: 18px; cursor: pointer;
-            transition: 0.3s;
+            width: 100%; padding: 15px; background: #2D9B91;
+            color: white; border: none; border-radius: 12px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 4px 15px rgba(45, 155, 145, 0.4);
+        }
+        .login-btn:hover { background: #248277; transform: translateY(-2px); }
+
+        /* 錯誤抖動 */
+        .error-shake { animation: shake 0.4s; border: 2px solid #ff4d4f !important; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
         }
 
-        .login-btn:hover { background: #248277; transform: scale(1.02); }
-
-        .copyright { font-size: 12px; margin-top: 35px; opacity: 0.8; }
-        
-        #error-msg { color: #ff4d4f; font-size: 14px; margin-top: 15px; display: none; }
+        .copyright { margin-top: 40px; font-size: 12px; opacity: 0.7; }
     </style>
 </head>
 <body>
-
-    <div class="login-card" id="loginCard">
-        <h2>歡迎回來！</h2>
-        <input type="text" id="username" placeholder="用戶名">
-        <input type="password" id="password" placeholder="密碼">
-        
-        <div style="text-align: left; margin: 10px 0 20px 5px; font-size: 14px;">
-            <input type="checkbox" id="rememberMe" style="width: auto; margin-right: 8px;"> 記住密碼
+    <div class="bg-overlay"></div>
+    <div class="container">
+        <div class="title-section">
+            <h1>WGMS</h1>
+            <p>氣象地動監測平台</p>
         </div>
 
-        <button class="login-btn" onclick="handleLogin()">登錄</button>
-        <div id="error-msg">⚠️ 登錄錯誤！請再重試一次...</div>
-        <p class="copyright">天氣概況Weather工作室版權所有．</p>
+        <div class="login-card" id="loginCard">
+            <h2 style="margin-bottom:40px;">歡迎回來！</h2>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="用戶名">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="密碼">
+            </div>
+            <div style="text-align: left; margin-bottom: 30px;">
+                <label style="cursor:pointer;"><input type="checkbox"> 記住密碼</label>
+            </div>
+            <button class="login-btn" onclick="handleLogin()">登錄</button>
+            <div id="error-msg" style="color: #ff4d4f; display:none; margin-top:15px;">⚠️ 登錄錯誤</div>
+            <p class="copyright">天氣概況Weather工作室版權所有．</p>
+        </div>
     </div>
 
     <script>
@@ -89,9 +103,6 @@
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             const card = document.getElementById('loginCard');
-            const error = document.getElementById('error-msg');
-
-            // 指向您在圖 4 看到的 API 地址
             const HF_API = "https://gmail23361-wo-eews-dashboard.hf.space/call/check_login";
 
             try {
@@ -100,10 +111,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ data: [user, pass] })
                 });
-                
                 const result = await response.json();
-                
-                // 檢查 API 狀態回傳
                 if (result.event_id) {
                     const check = await fetch(`${HF_API}/${result.event_id}`);
                     const final = await check.text();
@@ -113,14 +121,11 @@
                     }
                 }
                 triggerError();
-            } catch (e) {
-                triggerError();
-            }
+            } catch (e) { triggerError(); }
 
             function triggerError() {
                 card.classList.add('error-shake');
-                error.style.display = 'block';
-                setTimeout(() => card.classList.remove('error-shake'), 500);
+                setTimeout(() => card.classList.remove('error-shake'), 400);
             }
         }
     </script>
