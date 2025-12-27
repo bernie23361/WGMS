@@ -1,38 +1,68 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WGMS 氣象地動監測平台</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100%; 
-            width: 100%;
-            overflow: hidden; 
-            background-color: #000; /* 防止載入時閃爍白光 */
+        /* 蘇老闆的設計細節：背景與磨砂玻璃 */
+        body {
+            background: url('您的背景圖連結') no-repeat center center fixed;
+            background-size: cover;
+            font-family: "PingFang TC", sans-serif;
+            display: flex; justify-content: center; align-items: center; height: 100vh;
         }
-        /* 核心技術：使用 iframe 嵌入並透過邊距隱藏平台標籤 */
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100%;
+        .login-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 20px;
+            width: 400px; text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        iframe {
-            position: absolute;
-            top: -55px;   /* 往上擠掉 Hugging Face 頂部導航欄 */
-            left: 0;
-            width: 100%;
-            height: calc(100% + 110px); /* 補償上下被擠掉的空間，隱藏底部 Footer */
-            border: none;
+        /* 蘇老闆要求的：紅框抖動動畫 */
+        .error-shake {
+            animation: shake 0.5s;
+            border: 2px solid red !important;
         }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+        .login-btn { background: #2D9B91; color: white; border: none; padding: 10px 100px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <iframe src="https://gmail23661-wo-eews-dashboard.hf.space/?embed=true""</iframe>
+    <div class="login-card" id="card">
+        <h2>歡迎回來！</h2>
+        <input type="text" id="acc" placeholder="用戶名"><br><br>
+        <input type="password" id="pw" placeholder="密碼"><br><br>
+        <label><input type="checkbox"> 記住密碼</label><br><br>
+        <button class="login-btn" onclick="tryLogin()">登錄</button>
+        <p id="error-msg" style="color: red; display: none;">⚠️ 登錄錯誤！請再重試一次...</p>
+        <p style="margin-top:20px; font-size: 12px;">天氣概況Weather工作室版權所有．</p>
     </div>
+
+    <script>
+        async function tryLogin() {
+            const acc = document.getElementById('acc').value;
+            const pw = document.getElementById('pw').value;
+            const card = document.getElementById('card');
+            
+            // 這裡呼叫您的 Hugging Face 後端 API
+            const response = await fetch("您的HuggingFace網址/api/check_login", {
+                method: "POST",
+                body: JSON.stringify({data: [acc, pw]})
+            });
+            const result = await response.json();
+
+            if(result.data.status === "success") {
+                window.location.href = "dashboard.html"; // 登錄成功跳轉
+            } else {
+                card.classList.add('error-shake'); // 失敗則抖動
+                document.getElementById('error-msg').style.display = 'block';
+                setTimeout(() => card.classList.remove('error-shake'), 500);
+            }
+        }
+    </script>
 </body>
 </html>
